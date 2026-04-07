@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Antimicrobial Peptide Prediction Tool</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: linear-gradient(to right, #eef2f3, #dfe9f3);
+        }
+
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 1000px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0px 0px 15px #ccc;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="file"] {
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #1a252f;
+        }
+
+        .btn-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        .info-box {
+            background-color: #f4f6f7;
+            padding: 15px;
+            border-left: 5px solid #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        #download-top {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: gray;
+            font-size: 14px;
+        }
+    </style>
+
+     <script>
+var exampleText = `>Melittin
+GIGAVLKVLTTGLPALISWIKRKRQQ
+
+>LL37
+LLGDFFRKSKEKIGKEFKRIVQRIKDFLRNLVPRTES
+
+>Magainin
+GIGKFLHSAKKFGKAFVGEIMNS
+
+>NonAMP
+AAAAAAA`;
+
+// Load example when page opens
+window.onload = function() {
+    document.getElementById("sequenceBox").value = exampleText;
+};
+
+// Clear example when user clicks inside box
+function clearExample() {
+    var box = document.getElementById("sequenceBox");
+    if (box.value === exampleText) {
+        box.value = "";
+    }
+}
+
+// Restore example if user leaves box empty
+function restoreExample() {
+    var box = document.getElementById("sequenceBox");
+    if (box.value.trim() === "") {
+        box.value = exampleText;
+    }
+}
+
+function showLoading() {
+    document.getElementById("loading").style.display = "block";
+}
+</script>
+</head>
+<body>
+
+<div class="header">
+    Antimicrobial Peptide Prediction Tool
+</div>
+
+<div class="container">
+
+    <div class="info-box">
+
+<h2 style="text-align:center;">About the Tool</h2>
+
+<p>
+This web-based Antimicrobial Peptide (AMP) Prediction Tool is designed to identify and evaluate peptide sequences 
+for their antimicrobial potential using a hybrid machine learning framework. The system integrates multiple predictive 
+models and biologically relevant rules to classify peptides based on their antimicrobial activity, toxicity, and functional effectiveness.
+</p>
+
+<p>
+Antimicrobial peptides are short bioactive molecules that play a crucial role in innate immunity by inhibiting the growth 
+of bacteria, fungi, and viruses. Due to increasing antimicrobial resistance, computational prediction of AMPs has become 
+an important area of research in bioinformatics and drug discovery.
+</p>
+
+<br>
+
+<b>Prediction Objectives:</b>
+<ul>
+<li>Identify whether a peptide is antimicrobial (AMP) or non-antimicrobial</li>
+<li>Evaluate the toxicity profile of the peptide</li>
+<li>Predict biological activity based on Minimum Inhibitory Concentration (MIC)</li>
+<li>Provide a final classification integrating all predictions</li>
+</ul>
+
+<br>
+
+<b>Machine Learning Framework:</b>
+<ul>
+<li><b>Support Vector Machine (SVM):</b> Used for AMP classification based on high-dimensional sequence features (534 features)</li>
+<li><b>Random Forest:</b> Used for toxicity prediction using physicochemical properties</li>
+<li><b>XGBoost:</b> Used for activity prediction based on MIC-derived labels</li>
+</ul>
+
+<br>
+
+<b>Feature Engineering:</b>
+<p>
+The model uses a comprehensive set of sequence-derived features including:
+</p>
+<ul>
+<li>Amino Acid Composition (AAC)</li>
+<li>Dipeptide Composition (ASDC)</li>
+<li>Grouped Amino Acid Composition (GAAC)</li>
+<li>Physicochemical descriptors such as hydrophobicity, charge, and molecular weight</li>
+<li>Sequence pattern and structural tendency features</li>
+</ul>
+
+<br>
+
+<b>Prediction Thresholds:</b>
+<ul>
+<li>AMP classification threshold: 0.50</li>
+<li>Toxicity threshold: 0.45</li>
+<li>Activity threshold: 0.40</li>
+<li>Highly active threshold: 0.70</li>
+</ul>
+
+<br>
+
+<b>Biological Constraint:</b>
+<p>
+A rule-based biological filter is applied where peptides with net charge ≤ 0 are classified as non-antimicrobial. 
+This is based on the established observation that most antimicrobial peptides are positively charged and interact 
+with negatively charged microbial membranes.
+</p>
+
+<br>
+
+<b>Final Classification Categories:</b>
+<ul>
+<li>Safe Antimicrobial Peptide</li>
+<li>Toxic Antimicrobial Peptide</li>
+<li>Inactive Antimicrobial Peptide</li>
+<li>Non-Antimicrobial Peptide</li>
+</ul>
+
+<br>
+
+<b>Dataset and Training:</b>
+<p>
+The models are trained using curated peptide datasets containing experimentally validated antimicrobial activity, 
+toxicity, and MIC values. Cross-validation techniques are employed to ensure robustness and generalization of the models.
+</p>
+
+<br>
+
+<b>Applications:</b>
+<ul>
+<li>Drug discovery and peptide design</li>
+<li>Screening of novel antimicrobial candidates</li>
+<li>Bioinformatics research and education</li>
+<li>Understanding structure-function relationships in peptides</li>
+</ul>
+
+<br>
+
+<b>Limitations:</b>
+<p>
+The predictions are generated using machine learning models trained on curated datasets and may not fully capture 
+all biological complexities. While the models demonstrate high predictive performance (approximately 85–90% accuracy), 
+the results are probabilistic in nature and should be validated experimentally for critical applications.
+
+</p>
+
+</div>
+
+    <h2>Enter Peptide Sequence or Upload FASTA File</h2>
+
+    <form action="/" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+        <label><b>Enter Peptide Sequence:</b></label><br><br>
+        <p style="color:gray; font-size:14px;">
+Example sequences are pre-loaded. Click inside the box to replace with your own sequence or upload a FASTA file.
+</p>
+        <textarea name="sequence" rows="6" id="sequenceBox"
+onfocus="clearExample()"
+onblur="restoreExample()"></textarea>
+
+        <label><b>OR Upload FASTA File:</b></label><br>
+        <input type="file" name="fasta_file"><br><br>
+
+        <div class="btn-group">
+            <button class="btn" type="submit">Predict</button>
+        </div>
+    </form>
+
+    <div id="loading" style="display:none; text-align:center; color:blue;">
+        Prediction in progress... Please wait.
+    </div>
+
+    {% if results %}
+    <hr>
+    <h2>Batch Prediction Results</h2>
+
+    <p style="text-align:center;">
+        Total Sequences Processed: <b>{{ results|length }}</b>
+    </p>
+
+    <div id="download-top" class="btn-group">
+        <a href="/download_csv">
+            <button class="btn">⬇ Download Results CSV</button>
+        </a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Sequence ID</th>
+            <th>AMP</th>
+            <th>AMP Prob</th>
+            <th>Toxicity</th>
+            <th>Toxic Prob</th>
+            <th>Activity</th>
+            <th>Activity Prob</th>
+            <th>Final Result</th>
+        </tr>
+
+        {% for row in results %}
+        <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.amp_result }}</td>
+            <td>{{ row.amp_prob }}</td>
+            <td>{{ row.tox_result }}</td>
+            <td>{{ row.tox_prob }}</td>
+            <td>{{ row.act_result }}</td>
+            <td>{{ row.act_prob }}</td>
+            <td>
+{% if "Safe" in row.final_result %}
+<span style="color:green; font-weight:bold;">{{ row.final_result }}</span>
+{% elif "Toxic" in row.final_result %}
+<span style="color:red; font-weight:bold;">{{ row.final_result }}</span>
+{% elif "Inactive" in row.final_result %}
+<span style="color:orange; font-weight:bold;">{{ row.final_result }}</span>
+{% else %}
+<span style="color:black; font-weight:bold;">{{ row.final_result }}</span>
+{% endif %}
+</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% endif %}
+
+    <div class="footer">
+    Antimicrobial Peptide Prediction Tool | Machine Learning Based Bioinformatics Project
+    <br><br>
+    <span style="color:red; font-weight:bold;">
+        For Research Use Only. Not for use in diagnostic procedures.
+    </span>
+</div>
+
+</div>
+</body>
+</html>
