@@ -7,7 +7,7 @@ import io
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 import os
 import urllib.request
-
+#redeploy
 def download_file(url, filename):
     if not os.path.exists(filename):
         print(f"Downloading {filename}...")
